@@ -152,4 +152,4 @@ def predict_exchange_rate(target_date, model_path="model.pkl", data_path="final_
             if target_date >= datetime.strptime("08 April 2024", '%d %B %Y') 
             else float(final_prediction))
 
-print(predict_exchange_rate("2025-05-01"))  # Example usage
+#print(predict_exchange_rate("2025-05-01"))  # Example usage
