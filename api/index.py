@@ -5,9 +5,9 @@ import prediction
 
 app = Flask(__name__,template_folder='templates')
 CORS(app)
-"""
+
 Created a Flask API to serve the prediction model
-"""
+
 
 @app.route('/', methods=['GET'])
 def index():
