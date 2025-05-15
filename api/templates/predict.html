@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Exchange Rate Prediction</title>
+    <style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        font-family: 'Segoe UI', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+    .container {
+        max-width: 440px;
+        margin: 60px auto;
+        padding: 0 16px;
+    }
+    .result-card {
+        background: #fff;
+        padding: 36px 32px;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(60,60,120,0.15);
+        text-align: center;
+        transition: box-shadow 0.3s;
+    }
+    .result-card:hover {
+        box-shadow: 0 12px 40px rgba(60,60,120,0.25);
+    }
+    .fa {
+        color: #5a7cff;
+        font-size: 2.5em;
+        margin-bottom: 18px;
+    }
+    h1 {
+        margin: 0 0 20px 0;
+        font-size: 2em;
+        color: #3a3a5a;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+    .prediction-value {
+        font-size: 2.5em;
+        color: #5a7cff;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+    .back-button {
+        display: inline-block;
+        background: linear-gradient(90deg, #5a7cff 0%, #6ee7b7 100%);
+        color: #fff;
+        text-decoration: none;
+        padding: 13px 36px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        transition: transform 0.2s;
+    }
+    .back-button:hover {
+        background: linear-gradient(90deg, #6ee7b7 0%, #5a7cff 100%);
+        transform: translateY(-2px) scale(1.04);
+    }
+    .footer {
+        margin-top: 38px;
+        text-align: center;
+        color: #8a8fa3;
+        font-size: 0.98em;
+    }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="result-card">
+            <i class="fa fa-check-circle" aria-hidden="true"></i>
+            {% if prediction %}
+            <h1>Your Prediction Result</h1>
+            <div class="prediction-value">
+               $1 equivalent to {{prediction}} ZWL
+            </div>
+            <p>This is the exchange rate for your selected date.</p>
+            <p>Selected Date: {{ selected_date.strftime('%Y-%m-%d') }}</p>
+            <p>Current Date: {{ current_date.strftime('%Y-%m-%d') }}</p>
+            {% endif %}
+            <a href="/" class="back-button">Make Another Prediction</a>
+        </div>
+        <div class="footer">
+            Exchange Predictor Powered by &copy;KarmaSoftwares &mdash; Making currency forecasting simple and accessible.
+            Due to the nature of the prediction model, results may vary. Always consult with a financial advisor for critical decisions.
+        </div>
+    </div>
+</body>
+</html>
