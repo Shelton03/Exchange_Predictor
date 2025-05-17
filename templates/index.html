@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exchange Predictor</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/4541/4541461.png" >
     <style>
@@ -13,15 +14,16 @@
         min-height: 100vh;
     }
     .container {
-        max-width: 440px;
-        margin: 60px auto;
+        max-width: 90%;
+        width: 440px;
+        margin: 30px auto;
         padding: 0 16px;
     }
     form {
-        background: #fff;
+        width: 100%;
         max-width: 440px;
         margin: 0 auto;
-        padding: 36px 32px 28px 32px;
+        padding: 24px 20px;
         border-radius: 18px;
         box-shadow: 0 8px 32px rgba(60,60,120,0.15);
         display: flex;
@@ -45,21 +47,22 @@
     }
     h1 {
         margin: 0 0 10px 0;
-        font-size: 2em;
+        font-size: clamp(1.5em, 5vw, 2em);
         color: #3a3a5a;
         font-weight: 700;
         letter-spacing: 1px;
         text-align: center;
     }
     .subtitle {
+        font-size: clamp(0.9em, 4vw, 1.1em);
         color: #5a7cff;
-        font-size: 1.1em;
         margin-bottom: 18px;
         text-align: center;
     }
     p {
+        font-size: clamp(0.9em, 3.5vw, 1.08em);
+        padding: 0 10px;
         margin: 0 0 18px 0;
-        font-size: 1.08em;
         color: #4a4a6a;
         text-align: center;
     }
@@ -71,12 +74,12 @@
         text-align: center;
     }
     input[type="date"] {
+        width: min(220px, 90%);
         padding: 10px 12px;
         border: 1.5px solid #b0b8d1;
         border-radius: 8px;
         font-size: 1em;
         margin-bottom: 8px;
-        width: 220px;
         transition: border 0.2s;
         background: #f8fafc;
         display: block;
@@ -96,12 +99,13 @@
         text-align: center;
     }
     button[type="submit"] {
+        width: min(200px, 90%);
         background: linear-gradient(90deg, #5a7cff 0%, #6ee7b7 100%);
         color: #fff;
         border: none;
         border-radius: 8px;
-        padding: 13px 36px;
-        font-size: 1.13em;
+        padding: clamp(10px, 3vw, 13px) clamp(20px, 5vw, 36px);
+        font-size: clamp(1em, 3.5vw, 1.13em);
         font-weight: bold;
         cursor: pointer;
         box-shadow: 0 2px 8px rgba(90,124,255,0.12);
@@ -119,14 +123,55 @@
         font-size: 0.98em;
     }
     .currency-note {
+        margin: 12px 10px;
         background: #fff3dc;
         border-radius: 6px;
         padding: 8px 12px;
         color: #b86e00;
-        font-size: 0.95em;
-        margin: 12px 0;
+        font-size: clamp(0.85em, 3vw, 0.95em);
         text-align: center;
         border: 1px solid #ffe4bc;
+    }
+    select {
+        width: min(245px, 90%);
+        padding: 10px 12px;
+        border: 1.5px solid #b0b8d1;
+        border-radius: 8px;
+        font-size: 1em;
+        margin-bottom: 8px;
+        transition: border 0.2s;
+        background: #f8fafc;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        cursor: pointer;
+    }
+    select:focus {
+        border: 1.5px solid #5a7cff;
+        outline: none;
+        background: #f0f4ff;
+    }
+    .input-group {
+        margin-bottom: 20px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Add these new media queries */
+    @media screen and (max-width: 480px) {
+        .container {
+            margin: 20px auto;
+        }
+        form {
+            padding: 20px 16px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .footer {
+            font-size: 0.9em;
+            padding: 0 10px;
+        }
     }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -137,15 +182,23 @@
             <i class="fa fa-line-chart" aria-hidden="true"></i>
             <h1>Welcome to Exchange Predictor</h1>
             <div class="subtitle">Your smart assistant for forecasting currency exchange rates</div>
-            <div class="currency-note">
-                <i class="fa fa-info-circle"></i> Currently supporting ZWL (Zimbabwean Dollar) predictions only
-            </div>
             <p>
                 Curious about future exchange rates? <br>
                 Our tool uses advanced data analysis to help you estimate currency values for any date you choose.<br>
                 Simply select your desired date below and click <b>Submit</b> to get your prediction.
             </p>
-            <div style="width:100%; text-align: center;">
+            <div class="input-group">
+                <label for="currency">Select Currency:</label>
+                <select name="currency" id="currency" required>
+                    <option value="">Choose a currency</option>
+                    <option value="ZWL">Zimbabwean Dollar (ZWL)</option>
+                    <option value="GBP">British Pound (GBP)</option>
+                    <option value="ZAR"> South African Rand (ZAR)</option>
+                    <option value="ZMK">Zambian Kwacha (ZMK)</option> 
+                </select>
+                <small>Select the currency you want to predict</small>
+            </div>
+            <div class="input-group">
                 <label for="target_date">Desired Date:</label>
                 <input type="date" name="target_date" id="target_date" required>
                 <small>Please select a date (format: YYYY-MM-DD)</small>
@@ -153,6 +206,9 @@
             </div>
             <button type="submit">Submit</button>
         </form>
+        <div class="currency-note">
+            <i class="fa fa-info-circle"></i> All predictions are made against USD as the base currency
+        </div>
         <div class="footer">
            Exchange Predictor Powered by &copy;KarmaSoftwares &mdash; Making currency forecasting simple and accessible.
         </div>

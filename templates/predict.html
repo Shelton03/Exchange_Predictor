@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exchange Rate Prediction</title>
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/4541/4541461.png" >
     <style>
@@ -13,13 +14,14 @@
         min-height: 100vh;
     }
     .container {
-        max-width: 440px;
-        margin: 60px auto;
+        max-width: 90%;
+        width: 440px;
+        margin: 30px auto;
         padding: 0 16px;
     }
     .result-card {
-        background: #fff;
-        padding: 36px 32px;
+        width: 100%;
+        padding: 24px 20px;
         border-radius: 18px;
         box-shadow: 0 8px 32px rgba(60,60,120,0.15);
         text-align: center;
@@ -35,13 +37,16 @@
     }
     h1 {
         margin: 0 0 20px 0;
-        font-size: 2em;
+        font-size: clamp(1.5em, 5vw, 2em);
+        padding: 0 10px;
         color: #3a3a5a;
         font-weight: 700;
         letter-spacing: 1px;
     }
     .prediction-value {
-        font-size: 2.5em;
+        font-size: clamp(1.8em, 6vw, 2.5em);
+        padding: 0 10px;
+        word-break: break-word;
         color: #5a7cff;
         font-weight: bold;
         margin: 20px 0;
@@ -51,11 +56,13 @@
         background: linear-gradient(90deg, #5a7cff 0%, #6ee7b7 100%);
         color: #fff;
         text-decoration: none;
-        padding: 13px 36px;
+        width: min(200px, 90%);
+        padding: clamp(10px, 3vw, 13px) clamp(20px, 5vw, 36px);
         border-radius: 8px;
         font-weight: bold;
         margin-top: 20px;
         transition: transform 0.2s;
+        font-size: clamp(1em, 3.5vw, 1.13em);
     }
     .back-button:hover {
         background: linear-gradient(90deg, #6ee7b7 0%, #5a7cff 100%);
@@ -67,6 +74,24 @@
         color: #8a8fa3;
         font-size: 0.98em;
     }
+    
+    /* Add these new media queries */
+    @media screen and (max-width: 480px) {
+        .container {
+            margin: 20px auto;
+        }
+        .result-card {
+            padding: 20px 16px;
+        }
+        p {
+            font-size: 0.95em;
+            margin: 12px 0;
+        }
+        .footer {
+            font-size: 0.9em;
+            padding: 0 10px;
+        }
+    }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -75,13 +100,15 @@
         <div class="result-card">
             <i class="fa fa-check-circle" aria-hidden="true"></i>
             {% if prediction %}
+            
             <h1>Your Prediction Result</h1>
             <div class="prediction-value">
-               $1 equivalent to {{prediction}} ZWL
+               $1 equivalent to {{prediction}} {{target_currency}}
             </div>
             <p>This is the exchange rate for your selected date.</p>
             <p>Selected Date: {{ selected_date.strftime('%Y-%m-%d') }}</p>
             <p>Current Date: {{ current_date.strftime('%Y-%m-%d') }}</p>
+        
             {% endif %}
             <a href="/" class="back-button">Make Another Prediction</a>
         </div>

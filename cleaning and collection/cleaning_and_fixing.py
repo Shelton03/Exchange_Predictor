@@ -13,33 +13,55 @@ def get_target(target_currency):
     collection = pd.read_csv("final_rates.csv")
     collection["Date"] = pd.to_datetime(collection["Date"])
     collection = collection.set_index("Date")
-    print(collection.head())
     
+    print(collection.head())
+    print(collection.tail())
+    print(collection.shape)
+    print(collection[target_currency].min())
+    print(collection[target_currency].max())
+    print(collection[target_currency].idxmin())
+    
+    """
+    
+    """
+    lower_bound = 5
+    upper_bound = 40
+    collection = collection[(collection[target_currency] >= lower_bound) & (collection[target_currency] <= upper_bound)]
+    
+    print(collection.tail())
+    print(collection.shape)
+    print(collection[target_currency].min())
+    print(collection[target_currency].max())
+    print(collection[target_currency].idxmin())
 
     if target_currency in collection.columns:
         # Create a DataFrame with just the target currency
 
         try:
             target_df = collection[target_currency].dropna().astype(float).to_frame()
+            #print(target_df.head())
 
         except:
             target_df = collection[target_currency].dropna().str.replace(",", "").astype(float).to_frame()
-        
+            
                 
     
-            
+        """
         # Calculate the first and third quartiles
-        lower_bound = target_df[target_currency].quantile(0.1)
-        upper_bound = target_df[target_currency].quantile(0.9)
+        lower_bound = target_df[target_currency].quantile(0.9)
+        upper_bound = target_df[target_currency].quantile(0.1)
         iqr = upper_bound - lower_bound
-        lower_bound = lower_bound - 1.5 * iqr
-        upper_bound = upper_bound + 1.5 * iqr
+        lower_bound = 0.90 
+        upper_bound = 1.8 
         
 
         # Remove outliers
-        target_df = target_df[(target_df[target_currency] >= lower_bound) & (target_df[target_currency] <= upper_bound)]
-
+        lower_bound = 0.90 
+        upper_bound = 1.8
+        target_df = target_df[(target_df[target_currency] >= lower_bound) & (target_df[target_currency] <= upper_bound)]"""
+       
         # Resample to weekly frequency and fill forward any missing values
+        
         resampled_df = target_df.resample('W').mean().fillna(method='ffill')
 
         resampled_df = resampled_df.diff().dropna()
@@ -57,22 +79,21 @@ def get_target(target_currency):
 
 
 
-target = "ZWL"       
+target = "ZMK"       
 
 df = get_target(target)
 
 print(df.head())
 print(df.tail())
 
-
 """
-Different tests ran on data
+#Different tests ran on data
 
 #boxplot mainly for outliers
 fig, ax = plt.subplots(figsize=(15, 6))
-plt.boxplot(df[target])
-plt.ylabel("ZWL Exchange Rate")
-plt.title("ZWL Exchange Rate Boxplot")
+plt.boxplot(df)
+plt.ylabel("Exchange Rate")
+plt.title("Exchange Rate Boxplot")
 plt.show()
 
 #A simple line(time series) plot, shows the trend of the data
@@ -91,17 +112,18 @@ plot_pacf(df, ax=ax)
 plt.xlabel("Lag [weeks]")
 plt.ylabel("Correlation Coefficient")
 plt.title("Autocorrelation Function")
-plt.show()
-
 
 #ADF test, tests for stationarity of the data
-result = adfuller(df_diff)
+result = adfuller(df)
 print('ADF Statistic: %f' % result[0])
 print('p-value: %f' % result[1])
 print('Critical Values:')
 for key, value in result[4].items():
     print('\t%s: %.3f' % (key, value))
+plt.show()
 """
+
+
 
 #split the data into train and test sets
 cutoff_test = int(len(df)*0.9)
@@ -129,4 +151,3 @@ print("Test MAE:", test_mae)
 #save the model
 
 model.save("model.pkl")
-

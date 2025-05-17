@@ -19,12 +19,13 @@ def predict():
     current_date = datetime.now()
     
     target_date = request.form.get("target_date","")
+    target_currency = request.form.get("currency","")
     
     if not target_date:
         return jsonify({"error": "No target date provided"}), 400
     
     try:
-        predict =  prediction.predict_exchange_rate(target_date)
+        predict =  prediction.predict_exchange_rate(target_date,target_currency=target_currency)
         predict = round(float(predict),2)
         
         if predict is None:
@@ -33,7 +34,8 @@ def predict():
         return render_template("predict.html", 
                          prediction=predict,
                          selected_date=selected_date,
-                         current_date=current_date)
+                         current_date=current_date,
+                         target_currency=target_currency)
     
     except Exception as e:
         return render_template("predict.html", prediction="Error: " + str(e))

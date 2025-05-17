@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import pickle
 from dateutil.relativedelta import relativedelta
 
-def predict_exchange_rate(target_date, model_path="model.pkl", data_path="final_rates.csv", target_currency="ZWL"):
+def predict_exchange_rate(target_date, data_path="final_rates.csv", target_currency="ZWL"):
     """
     Predict the exchange rate for a given target date using the saved AutoReg model.
     
@@ -24,6 +24,9 @@ def predict_exchange_rate(target_date, model_path="model.pkl", data_path="final_
     float
         Predicted exchange rate for the target date.
     """
+    
+    model_path = f"models/{target_currency}/model.pkl"
+    print(f"Model path: {model_path}")
     
     if isinstance(target_date, str):
         target_date = pd.to_datetime(target_date)
@@ -54,16 +57,36 @@ def predict_exchange_rate(target_date, model_path="model.pkl", data_path="final_
         target_df = collection[target_currency].dropna().str.replace(",", "").astype(float).to_frame()
     
     # Remove outliers
-    lower_bound = target_df[target_currency].quantile(0.1)
-    upper_bound = target_df[target_currency].quantile(0.9)
+    
 
     #Used the above quartiles because the data is not normally distributed
-    iqr = upper_bound - lower_bound
-    lower_bound = lower_bound - 1.5 * iqr
-    upper_bound = upper_bound + 1.5 * iqr
-    target_df = target_df[(target_df[target_currency] >= lower_bound) & 
-                          (target_df[target_currency] <= upper_bound)]
-    
+
+    if target_currency == "ZWL":
+        lower_bound = target_df[target_currency].quantile(0.1)
+        upper_bound = target_df[target_currency].quantile(0.9)
+        iqr = upper_bound - lower_bound
+        lower_bound = lower_bound - 1.5 * iqr
+        upper_bound = upper_bound + 1.5 * iqr
+        target_df = target_df[(target_df[target_currency] >= lower_bound) & (target_df[target_currency] <= upper_bound)]
+
+    elif target_currency == "ZMK":
+        lower_bound = 5
+        upper_bound = 40
+        target_df = target_df[(target_df[target_currency] >= lower_bound) & (target_df[target_currency] <= upper_bound)]
+
+    elif target_currency == "GBP":
+        lower_bound = 0.90 
+        upper_bound = 1.8
+        target_df = target_df[(target_df[target_currency] >= lower_bound) & (target_df[target_currency] <= upper_bound)]
+
+
+    else:
+        lower_bound = 8
+        upper_bound = 30
+        target_df = target_df[(target_df[target_currency] >= lower_bound) & (target_df[target_currency] <= upper_bound)]
+        
+        
+
     # Resample to weekly frequency and fill forward any missing values
     resampled_df = target_df.resample('W').mean().fillna(method='ffill')
     original_resampled_df = resampled_df.copy() 
@@ -81,17 +104,28 @@ def predict_exchange_rate(target_date, model_path="model.pkl", data_path="final_
         # The target date is within our historical data, so we can just return it
         if target_date in resampled_df.index:
             
-            return (original_resampled_df.loc[target_date, target_currency]/2498.7242
+            if target_currency == "ZWL":
+                return (original_resampled_df.loc[target_date, target_currency]/2498.7242
                     if target_date >= datetime.strptime("08 April 2024", '%d %B %Y')
                     else original_resampled_df.loc[target_date, target_currency])
+            
+            else:
+                return original_resampled_df.loc[target_date, target_currency]
+            
         else:
 
             # Find the nearest date in our dataset
             nearest_date = original_resampled_df.index[original_resampled_df.index.get_indexer([target_date], method='nearest')[0]]
             
-            return (original_resampled_df.loc[nearest_date, target_currency]/2498.7242
+            if target_currency == "ZWL":
+                # If the target date is after 8th April 2024, divide by the exchange rate of ZIG to RTGS
+                # Otherwise, return the original value
+                return (original_resampled_df.loc[nearest_date, target_currency]/2498.7242
                     if nearest_date >= datetime.strptime("08 April 2024", '%d %B %Y')
                     else original_resampled_df.loc[nearest_date, target_currency])
+            
+            else:
+                return original_resampled_df.loc[nearest_date, target_currency]
     
     # For future dates beyond our data, use the model to forecast
     
@@ -148,8 +182,13 @@ def predict_exchange_rate(target_date, model_path="model.pkl", data_path="final_
     # Ensure prediction is not negative (exchange rates are typically positive)
     final_prediction = max(0.0001, final_prediction)
     
-    return (float(final_prediction)/2498.7242 
+    if target_currency == "ZWL":
+        # If the target date is after 8th April 2024, divide by the exchange rate of ZIG to RTGS
+        # Otherwise, return the original value
+        return (float(final_prediction)/2498.7242 
             if target_date >= datetime.strptime("08 April 2024", '%d %B %Y') 
             else float(final_prediction))
+    else:
+        return float(final_prediction)
 
-#print(predict_exchange_rate("2025-05-01"))  # Example usage
+print(predict_exchange_rate("2025-05-01",target_currency="GBP"))  # Example usage
